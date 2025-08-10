@@ -2,8 +2,12 @@ package com.recruitment.atipera.client;
 
 import com.recruitment.atipera.model.Branch;
 import com.recruitment.atipera.model.Repository;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @Component
 public class GitHubClient {
@@ -15,17 +19,16 @@ public class GitHubClient {
     public GitHubClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
-    public Repository[] getRepositoriesByUsername(String username) {
+    public List<Repository> getRepositoriesByUsername(String username) {
+        String url = String.format("%s/users/%s/repos", gitHubUrl, username);
 
-        String RepositoryUrl = this.gitHubUrl + "/users/" + username + "/repos";
-
-        return restTemplate.getForObject(RepositoryUrl, Repository[].class);
+        return restTemplate.exchange(url, HttpMethod.GET,null,
+                new ParameterizedTypeReference<List<Repository>>() {}).getBody();
     }
-    public Branch[] getBranchesByRepository(String username, String repositoryName) {
+    public List<Branch> getBranchesByRepository(String username, String repositoryName) {
+        String url = String.format("%s/repos/%s/%s/branches", gitHubUrl, username, repositoryName);
 
-        String BranchUrl = this.gitHubUrl + "/repos/" + username + "/" + repositoryName + "/branches";
-
-        return restTemplate.getForObject(BranchUrl, Branch[].class);
-    }
+        return restTemplate.exchange(url, HttpMethod.GET,null,
+                new ParameterizedTypeReference<List<Branch>>() {}).getBody();    }
 
 }

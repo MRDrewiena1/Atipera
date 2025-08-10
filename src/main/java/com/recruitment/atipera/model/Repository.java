@@ -1,14 +1,15 @@
 package com.recruitment.atipera.model;
 
-import lombok.Builder;
+import lombok.*;
 
 import java.util.List;
 
-
-@Builder
-public record Repository(
-        String name,
-        Owner owner,
-        List<Branch> branches
-) {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Repository {
+        String name;
+        Owner owner;
+        List<Branch> branches;
+        boolean fork;
 }
