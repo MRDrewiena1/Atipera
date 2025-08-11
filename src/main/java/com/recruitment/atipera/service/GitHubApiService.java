@@ -2,7 +2,9 @@ package com.recruitment.atipera.service;
 
 import com.recruitment.atipera.client.GitHubClient;
 import com.recruitment.atipera.dto.RepositoryResponseDTO;
+import com.recruitment.atipera.exception.UserNotFoundException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class GitHubApiService {
         this.gitHubClient = gitHubClient;
     }
     public List<RepositoryResponseDTO> getUserRepositories(String login) {
+        try {
         List<RepositoryResponseDTO> repositoryResponseDTOList = gitHubClient.getRepositoriesByUsername(login)
                 .stream()
                 .filter(repository -> !repository.isFork())
@@ -21,10 +24,11 @@ public class GitHubApiService {
                         )))
                 .map(RepositoryResponseDTO::new)
                 .toList();
-        if (repositoryResponseDTOList.isEmpty()) {
-            //todo
+            return repositoryResponseDTOList;
+        }catch (HttpClientErrorException e) {
+            throw new UserNotFoundException("User not found");
         }
-        return repositoryResponseDTOList;
-    }
+
+        }
 
 }
